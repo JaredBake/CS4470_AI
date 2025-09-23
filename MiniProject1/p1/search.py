@@ -199,13 +199,13 @@ def breadthFirstSearch(problem: 'SearchProblem') -> List[str]:
     """
     start = problem.getStartState()
     list = []
-    visited = set()
+    visited = []
     queue = Queue()
     queue.push((start, []))
 
     while True:
         state, list = queue.pop()
-        visited.add(state)
+        visited.append(state)
         # If the state is the goal return true and the list of path
         if problem.isGoalState(state):
             break
@@ -215,7 +215,7 @@ def breadthFirstSearch(problem: 'SearchProblem') -> List[str]:
             continue
         for successor in successors:
             if successor[0] not in visited:
-                visited.add(successor[0])
+                visited.append(successor[0])
                 queue.push((successor[0], list + [successor[1]]))
             
     return list

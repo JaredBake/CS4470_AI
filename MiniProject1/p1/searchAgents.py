@@ -468,9 +468,6 @@ class CornersProblem(search.SearchProblem):
                         break
                 successors.append((nextState, action, 1))
         self._expanded += 1 # DO NOT CHANGE
-        if state not in self._visited:
-            self._visited[state] = True
-            self._visitedlist.append(state)
         return successors
 
     def getCostOfActions(self, actions: Optional[List[str]]) -> int:
