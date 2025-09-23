@@ -35,7 +35,7 @@ Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 from game import Agent
 from game import Directions
-from game import GameState
+from game import GameStateData as GameState
 from typing import List, Optional
 import random
 

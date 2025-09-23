@@ -417,8 +417,7 @@ class CornersProblem(search.SearchProblem):
                 - Current position as (x,y) coordinates
                 - Empty list of visited corners
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.startingPosition, []
 
     def isGoalState(self, state: Tuple[Tuple[int, int], List[Tuple[int, int]]]) -> bool:
         """Check if current state is a goal state.
@@ -431,8 +430,9 @@ class CornersProblem(search.SearchProblem):
         Returns:
             bool: True if all corners visited, False otherwise
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if 4 == len(state[1]):
+            return True
+        return False
 
     def getSuccessors(self, state: Tuple[Tuple[int, int], List[Tuple[int, int]]]) -> List[Tuple[Tuple[Tuple[int, int], List[Tuple[int, int]]], str, int]]:
         """Get successor states and their associated actions and costs.
@@ -454,8 +454,19 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
         """
-        "*** YOUR CODE HERE ***"
-
+        successors = []
+        
+        for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
+            (x, y), list = state
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            if not self.walls[nextx][nexty]:
+                nextState = (nextx, nexty), list.copy()
+                for corner in self.corners:
+                    if corner not in list and nextState[0] == corner:
+                        nextState[1].append(corner)
+                        break
+                successors.append((nextState, action, 1))
         self._expanded += 1 # DO NOT CHANGE
         return successors
 

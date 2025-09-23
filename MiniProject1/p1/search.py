@@ -154,8 +154,34 @@ def depthFirstSearch(problem: 'SearchProblem') -> List[str]:
         >>> print(f"Is start a goal? {problem.isGoalState(problem.getStartState())}")
         >>> print(f"Start's successors: {problem.getSuccessors(problem.getStartState())}")
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    start = problem.getStartState()
+    print(f"Start: {start}")
+    state = start
+    list = []
+    visited = set()
+    visited.add(state)
+
+    def recursive_dfs(state, path):
+        visited.add(state)
+        if path is not None:
+            list.append(path)
+        # If the state is the goal return true and the list of path
+        if problem.isGoalState(state):
+            return True
+        successors = problem.getSuccessors(state)
+        # If there is no children return false and continue
+        if successors == []:
+            return False
+        for successor in successors:
+            if successor[0] not in visited:
+                done = recursive_dfs(successor[0], successor[1])
+                if done:
+                    return True
+                list.pop()
+            
+    recursive_dfs(state, None)
+    return list
+
 
 
 def breadthFirstSearch(problem: 'SearchProblem') -> List[str]:
@@ -171,8 +197,27 @@ def breadthFirstSearch(problem: 'SearchProblem') -> List[str]:
         List[str]: A sequence of actions that reaches the goal state,
                   or empty list if no solution exists
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    start = problem.getStartState()
+    list = []
+    visited = set()
+    queue = Queue()
+    queue.push((start, []))
+
+    while True:
+        state, list = queue.pop()
+        visited.add(state)
+        # If the state is the goal return true and the list of path
+        if problem.isGoalState(state):
+            break
+        successors = problem.getSuccessors(state)
+        # If there is no children return false and continue
+        if successors == []:
+            continue
+        for successor in successors:
+            if successor[0] not in visited:
+                queue.push((successor[0], list + [successor[1]]))
+            
+    return list
 
 
 def uniformCostSearch(problem: 'SearchProblem') -> List[str]:
@@ -188,8 +233,27 @@ def uniformCostSearch(problem: 'SearchProblem') -> List[str]:
         List[str]: A sequence of actions that reaches the goal state with minimum
                   total cost, or empty list if no solution exists
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    start = problem.getStartState()
+    list = []
+    visited = set()
+    queue = PriorityQueue()
+    queue.push((start, []), 0)
+
+    while True:
+        state, list = queue.pop()
+        visited.add(state)
+        # If the state is the goal return true and the list of path
+        if problem.isGoalState(state):
+            break
+        successors = problem.getSuccessors(state)
+        # If there is no children return false and continue
+        if successors == []:
+            continue
+        for successor in successors:
+            if successor[0] not in visited:
+                queue.push((successor[0], list + [successor[1]]), successor[2] + problem.getCostOfActions(list))
+            
+    return list
 
 def nullHeuristic(state: Any, problem: Optional['SearchProblem'] = None) -> float:
     """Return a trivial heuristic estimate of 0 for any state.
