@@ -289,8 +289,29 @@ def aStarSearch(problem: 'SearchProblem', heuristic: Callable = nullHeuristic) -
         List[str]: A sequence of actions that reaches the goal state with optimal cost,
                   or empty list if no solution exists
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    start = problem.getStartState()
+    list = []
+    visited = set()
+    queue = PriorityQueue()
+    queue.push((start, []), 0)
+
+    while True:
+        state, list = queue.pop()
+        visited.add(state)
+        # If the state is the goal return true and the list of path
+        if problem.isGoalState(state):
+            break
+        successors = problem.getSuccessors(state)
+        # If there is no children return false and continue
+        if successors == []:
+            continue
+        for successor in successors:
+            if successor[0] not in visited:
+                if not problem.isGoalState(successor[0]):
+                    visited.add(successor[0])
+                queue.push((successor[0], list + [successor[1]]), successor[2] + problem.getCostOfActions(list) + heuristic(successor[0], problem))
+            
+    return list
 
 
 # Abbreviations - Common search algorithm aliases with type hints
