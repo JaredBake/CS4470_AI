@@ -252,6 +252,8 @@ def uniformCostSearch(problem: 'SearchProblem') -> List[str]:
             continue
         for successor in successors:
             if successor[0] not in visited:
+                if not problem.isGoalState(successor[0]):
+                    visited.add(successor[0])
                 queue.push((successor[0], list + [successor[1]]), successor[2] + problem.getCostOfActions(list))
             
     return list
