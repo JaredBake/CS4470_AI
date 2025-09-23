@@ -236,13 +236,13 @@ def uniformCostSearch(problem: 'SearchProblem') -> List[str]:
     """
     start = problem.getStartState()
     list = []
-    visited = set()
+    visited = []
     queue = PriorityQueue()
     queue.push((start, []), 0)
 
     while True:
         state, list = queue.pop()
-        visited.add(state)
+        visited.append(state)
         # If the state is the goal return true and the list of path
         if problem.isGoalState(state):
             break
@@ -253,7 +253,7 @@ def uniformCostSearch(problem: 'SearchProblem') -> List[str]:
         for successor in successors:
             if successor[0] not in visited:
                 if not problem.isGoalState(successor[0]):
-                    visited.add(successor[0])
+                    visited.append(successor[0])
                 queue.push((successor[0], list + [successor[1]]), successor[2] + problem.getCostOfActions(list))
             
     return list
@@ -291,13 +291,13 @@ def aStarSearch(problem: 'SearchProblem', heuristic: Callable = nullHeuristic) -
     """
     start = problem.getStartState()
     list = []
-    visited = set()
+    visited = []
     queue = PriorityQueue()
     queue.push((start, []), 0)
 
     while True:
         state, list = queue.pop()
-        visited.add(state)
+        visited.append(state)
         # If the state is the goal return true and the list of path
         if problem.isGoalState(state):
             break
@@ -308,7 +308,7 @@ def aStarSearch(problem: 'SearchProblem', heuristic: Callable = nullHeuristic) -
         for successor in successors:
             if successor[0] not in visited:
                 if not problem.isGoalState(successor[0]):
-                    visited.add(successor[0])
+                    visited.append(successor[0])
                 queue.push((successor[0], list + [successor[1]]), successor[2] + problem.getCostOfActions(list) + heuristic(successor[0], problem))
             
     return list
