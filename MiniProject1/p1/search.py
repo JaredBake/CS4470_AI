@@ -215,6 +215,7 @@ def breadthFirstSearch(problem: 'SearchProblem') -> List[str]:
             continue
         for successor in successors:
             if successor[0] not in visited:
+                visited.add(successor[0])
                 queue.push((successor[0], list + [successor[1]]))
             
     return list
