@@ -268,23 +268,20 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 for action in legalActions:
                     successor = state.generateSuccessor(agentIndex, action)
                     value = max(value, alphabeta(successor, nextAgent, nextDepth, alpha, beta))
-                    # Note: do not prune on equality; only prune when value > beta
                     if value > beta:
                         return value
                     alpha = max(alpha, value)
                 return value
-            else:  # Minimizer (Ghost)
+            else: 
                 value = float('inf')
                 for action in legalActions:
                     successor = state.generateSuccessor(agentIndex, action)
                     value = min(value, alphabeta(successor, nextAgent, nextDepth, alpha, beta))
-                    # Do not prune on equality; only prune when value < alpha
                     if value < alpha:
                         return value
                     beta = min(beta, value)
                 return value
 
-        # Root: choose best action (no pruning at root besides passing alpha/beta)
         legalMoves = gameState.getLegalActions(0)
         if not legalMoves:
             return Directions.STOP
@@ -299,7 +296,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             if score > bestScore:
                 bestScore = score
                 bestAction = action
-            # update alpha for root
             alpha = max(alpha, bestScore)
 
         return bestAction
