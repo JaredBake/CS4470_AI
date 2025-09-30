@@ -181,7 +181,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
             nextAgent = (agentIndex + 1) % numAgents
             nextDepth = currentDepth + 1 if nextAgent == 0 else currentDepth
 
-            if agentIndex == 0:  # Pacman
+            if agentIndex == 0:
                 bestVal = -float('inf')
                 for action in legalActions:
                     successor = state.generateSuccessor(agentIndex, action)
@@ -189,7 +189,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     if val > bestVal:
                         bestVal = val
                 return bestVal
-            else:  # Ghosts
+            else:
                 bestVal = float('inf')
                 for action in legalActions:
                     successor = state.generateSuccessor(agentIndex, action)
@@ -369,8 +369,46 @@ def betterEvaluationFunction(game_state: GameState) -> float:
         float: The evaluation score where higher values are better
     """
     
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pacPos = game_state.getPacmanPosition()
+    foodGrid = game_state.getFood()
+    foodList = foodGrid.asList() if hasattr(foodGrid, 'asList') else []
+    ghostStates = game_state.getGhostStates()
+    capsules = game_state.getCapsules()
+    score = game_state.getScore()
+
+    value = float(score)
+
+    if foodList:
+        dists = [util.manhattanDistance(pacPos, f) for f in foodList]
+        closestFood = min(dists)
+        value += 10.0 / (closestFood + 1)
+        value -= 1.5 * len(foodList)
+    else:
+        value += 1000.0
+
+    for ghost in ghostStates:
+        gPos = ghost.getPosition()
+        dist = util.manhattanDistance(pacPos, gPos)
+        if ghost.scaredTimer > 0:
+            if dist <= ghost.scaredTimer:
+                value += 200.0 / (dist + 1)
+            else:
+                value += 50.0 / (dist + 1)
+        else:
+            if dist <= 1:
+                return -float('inf')
+            value -= 10.0 / (dist)
+
+    if capsules:
+        capsuleDists = [util.manhattanDistance(pacPos, c) for c in capsules]
+        closestCap = min(capsuleDists)
+        nearestGhostDist = min((util.manhattanDistance(pacPos, g.getPosition()) for g in ghostStates), default=999)
+        if nearestGhostDist < 5:
+            value += 50.0 / (closestCap + 1)
+        else:
+            value += 5.0 / (closestCap + 1)
+
+    return value
     
 # Abbreviation
 better = betterEvaluationFunction
