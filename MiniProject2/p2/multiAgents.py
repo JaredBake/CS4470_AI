@@ -188,20 +188,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
             currentDepth counts how many full pacman plys have been completed so far.
             Stop expanding when currentDepth == self.depth or state is terminal.
             """
-            # Terminal or depth cutoff
             if state.isWin() or state.isLose() or currentDepth == self.depth:
                 return self.evaluationFunction(state)
 
             legalActions = state.getLegalActions(agentIndex)
             if not legalActions:
                 return self.evaluationFunction(state)
-
-            # Determine next agent and depth increment
             nextAgent = (agentIndex + 1) % numAgents
-            # If nextAgent is Pacman (0), then we've completed one full ply after this action
             nextDepth = currentDepth + 1 if nextAgent == 0 else currentDepth
 
-            if agentIndex == 0:  # Pacman (maximizer)
+            if agentIndex == 0:  # Pacman
                 bestVal = -float('inf')
                 for action in legalActions:
                     successor = state.generateSuccessor(agentIndex, action)
@@ -209,7 +205,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     if val > bestVal:
                         bestVal = val
                 return bestVal
-            else:  # Ghosts (minimizers)
+            else:  # Ghosts
                 bestVal = float('inf')
                 for action in legalActions:
                     successor = state.generateSuccessor(agentIndex, action)
@@ -218,7 +214,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
                         bestVal = val
                 return bestVal
 
-        # Root: choose the action with highest minimax value
+        # Root
         legalMoves = gameState.getLegalActions(0)
         if not legalMoves:
             return Directions.STOP
@@ -227,7 +223,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         bestAction = legalMoves[0]
         for action in legalMoves:
             successor = gameState.generateSuccessor(0, action)
-            # After pacman moves, next agent is 1 if there are ghosts, otherwise 0
             nextAgent = 1 % numAgents
             nextDepth = 0 + (1 if nextAgent == 0 else 0)
             score = minimax(successor, nextAgent, nextDepth)
