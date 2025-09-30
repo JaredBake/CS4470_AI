@@ -168,17 +168,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
     """
 
     def getAction(self, gameState: GameState) -> str:
-        """Return the minimax action from the current gameState.
-        
-        Args:
-            gameState: The current game state
-            
-        Returns:
-            str: The optimal action according to minimax search
-            
-        Uses self.depth and self.evaluationFunction to determine the best action
-        by considering the worst-case scenario at each level.
-        """
 
         numAgents = gameState.getNumAgents()
 
@@ -320,9 +309,51 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
             
         All ghosts are modeled as choosing uniformly at random from their legal moves.
         """
-        
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        numAgents = gameState.getNumAgents()
+
+        def expectimax(state: GameState, agentIndex: int, currentDepth: int) -> float:
+            # Terminal or depth cutoff
+            if state.isWin() or state.isLose() or currentDepth == self.depth:
+                return self.evaluationFunction(state)
+
+            legalActions = state.getLegalActions(agentIndex)
+            if not legalActions:
+                return self.evaluationFunction(state)
+
+            nextAgent = (agentIndex + 1) % numAgents
+            nextDepth = currentDepth + 1 if nextAgent == 0 else currentDepth
+
+            if agentIndex == 0:  # Pacman (maximizer)
+                bestVal = -float('inf')
+                for action in legalActions:
+                    successor = state.generateSuccessor(agentIndex, action)
+                    val = expectimax(successor, nextAgent, nextDepth)
+                    if val > bestVal:
+                        bestVal = val
+                return bestVal
+            else:  # Ghosts (expected value)
+                total = 0.0
+                prob = 1.0 / len(legalActions)
+                for action in legalActions:
+                    successor = state.generateSuccessor(agentIndex, action)
+                    total += prob * expectimax(successor, nextAgent, nextDepth)
+                return total
+
+        # Root: choose the action with highest expectimax value
+        legalMoves = gameState.getLegalActions(0)
+        if not legalMoves:
+            return Directions.STOP
+
+        bestScore = -float('inf')
+        bestAction = legalMoves[0]
+        for action in legalMoves:
+            successor = gameState.generateSuccessor(0, action)
+            score = expectimax(successor, 1 % numAgents, 0 + (1 if (1 % numAgents) == 0 else 0))
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+
+        return bestAction
 
 def betterEvaluationFunction(game_state: GameState) -> float:
     """A more sophisticated evaluation function for Pacman game states.
