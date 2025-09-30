@@ -183,11 +183,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         numAgents = gameState.getNumAgents()
 
         def minimax(state: GameState, agentIndex: int, currentDepth: int) -> float:
-            """Return the minimax value for the given state.
-
-            currentDepth counts how many full pacman plys have been completed so far.
-            Stop expanding when currentDepth == self.depth or state is terminal.
-            """
             if state.isWin() or state.isLose() or currentDepth == self.depth:
                 return self.evaluationFunction(state)
 
