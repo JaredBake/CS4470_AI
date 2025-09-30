@@ -248,8 +248,61 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         At depth 0, max_value returns an action. At other depths, it returns a value.
         """
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Multi-agent alpha-beta search
+        numAgents = gameState.getNumAgents()
+
+        def alphabeta(state: GameState, agentIndex: int, currentDepth: int, alpha: float, beta: float) -> float:
+            # Terminal or depth cutoff
+            if state.isWin() or state.isLose() or currentDepth == self.depth:
+                return self.evaluationFunction(state)
+
+            legalActions = state.getLegalActions(agentIndex)
+            if not legalActions:
+                return self.evaluationFunction(state)
+
+            nextAgent = (agentIndex + 1) % numAgents
+            nextDepth = currentDepth + 1 if nextAgent == 0 else currentDepth
+
+            if agentIndex == 0:  # Maximizer (Pacman)
+                value = -float('inf')
+                for action in legalActions:
+                    successor = state.generateSuccessor(agentIndex, action)
+                    value = max(value, alphabeta(successor, nextAgent, nextDepth, alpha, beta))
+                    # Note: do not prune on equality; only prune when value > beta
+                    if value > beta:
+                        return value
+                    alpha = max(alpha, value)
+                return value
+            else:  # Minimizer (Ghost)
+                value = float('inf')
+                for action in legalActions:
+                    successor = state.generateSuccessor(agentIndex, action)
+                    value = min(value, alphabeta(successor, nextAgent, nextDepth, alpha, beta))
+                    # Do not prune on equality; only prune when value < alpha
+                    if value < alpha:
+                        return value
+                    beta = min(beta, value)
+                return value
+
+        # Root: choose best action (no pruning at root besides passing alpha/beta)
+        legalMoves = gameState.getLegalActions(0)
+        if not legalMoves:
+            return Directions.STOP
+
+        bestScore = -float('inf')
+        bestAction = legalMoves[0]
+        alpha = -float('inf')
+        beta = float('inf')
+        for action in legalMoves:
+            successor = gameState.generateSuccessor(0, action)
+            score = alphabeta(successor, 1 % numAgents, 0 + (1 if (1 % numAgents) == 0 else 0), alpha, beta)
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+            # update alpha for root
+            alpha = max(alpha, bestScore)
+
+        return bestAction
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """An agent that uses expectimax search to make decisions.
